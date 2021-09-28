@@ -74,9 +74,17 @@ function resetBall() {
     ball.x = canvas.width / 2;
     ball.y = canvas.height / 2;
     ball.speed = 5;
-    ball.velX = 5;
-    ball.velY = 5;
+    ball.velX = 0;
+    ball.velY = 0;
 }
+
+function startBall() {
+    if (ball.velX == 0 && ball.velY == 0) {
+        ball.velX = 5;
+        ball.velY = 5;
+    }
+}
+canvas.addEventListener('click', () => startBall());
 
 function collisionDetection(ball, player) {
     ball.top = ball.y - ball.radius;
@@ -97,8 +105,8 @@ function update() {
     ball.y += ball.velY;
 
     /* Simple AI to control the computer paddle */
-    let difficultyFactor = 0.1;
-    computer.y += (ball.y - (computer.y + computer.height / 2));
+    let difficultyFactor = 0.05;
+    computer.y += (ball.y - (computer.y + computer.height / 2)) * difficultyFactor;
 
     if (ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
         ball.velY = -ball.velY;
@@ -108,10 +116,10 @@ function update() {
     if (collisionDetection(ball, whichPlayer)) {
         let collisionPoint = ball.y - (whichPlayer.y + whichPlayer.height / 2);
         collisionPoint = collisionPoint / (whichPlayer.height / 2);
-        let angleRad = collisionPoint * Math.PI / 4;
+        let deflectionAngle = collisionPoint * Math.PI / 4;
         let direction = (ball.x < canvas.width / 2) ? 1 : -1;
-        ball.velX = direction * ball.speed * Math.cos(angleRad);
-        ball.velY = direction * ball.speed * Math.sin(angleRad);
+        ball.velX = direction * ball.speed * Math.cos(deflectionAngle);
+        ball.velY = direction * ball.speed * Math.sin(deflectionAngle);
         ball.speed += 0.5;
     }
 
@@ -121,6 +129,13 @@ function update() {
     } else if (ball.x + ball.radius > canvas.width) {
         user.score++;
         resetBall();
+    }
+    if (computer.score == 5 || user.score == 5) {
+        if (computer.score == 5) {
+            winner.textContent = "Computer Wins!";
+        } else {
+            winner.textContent = "User Wins!"
+        }
     }
 
 }
@@ -135,10 +150,15 @@ function render() {
     drawCircle(ball.x, ball.y, ball.radius, ball.color);
 }
 
+function callUpdate() {
+    update();
+}
+
 function game() {
     update();
     render();
 }
 
 const fps = 60;
+
 setInterval(game, 1000 / fps);

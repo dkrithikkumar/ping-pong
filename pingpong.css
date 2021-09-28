@@ -4,10 +4,15 @@
     box-sizing: border-box;
 }
 
+body {
+    background-color: rgb(39, 38, 38);
+}
+
 #title {
     font-family: 'Press Start 2P', cursive;
     font-size: 75px;
     text-align: center;
+    color: #fff;
     margin-top: 50px;
     margin-bottom: 50px;
 }
@@ -16,10 +21,19 @@
     font-family: 'Press Start 2P', cursive;
     font-size: 20px;
     text-align: center;
+    color: #fff;
     margin-top: 5px;
     margin-bottom: 40px;
 }
 
+#gamestart {
+    text-align: center;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 35px;
+    margin-top: 150px;
+}
+
 #pingpong {
+    display: block;
     margin-left: 30%;
 }
