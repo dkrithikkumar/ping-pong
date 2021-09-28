@@ -1,6 +1,7 @@
 /* Selecting the required elements */
 const canvas = document.getElementById("pingpong");
 const context = canvas.getContext("2d");
+const winner = document.getElementById("winner");
 
 /* Creating the necessary objects */
 const user = {
@@ -69,6 +70,14 @@ canvas.addEventListener("mousemove", (event) => {
     user.y = event.clientY - rect.top - user.height / 2;
 })
 
+function resetBall() {
+    ball.x = canvas.width / 2;
+    ball.y = canvas.height / 2;
+    ball.speed = 5;
+    ball.velX = 5;
+    ball.velY = 5;
+}
+
 function collisionDetection(ball, player) {
     ball.top = ball.y - ball.radius;
     ball.bottom = ball.y + ball.radius;
@@ -89,15 +98,30 @@ function update() {
 
     /* Simple AI to control the computer paddle */
     let difficultyFactor = 0.1;
-    computer.y += (ball.y - (computer.y + computer.height / 2)) * difficultyFactor;
+    computer.y += (ball.y - (computer.y + computer.height / 2));
 
     if (ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
         ball.velY = -ball.velY;
     }
 
     let whichPlayer = (ball.x < canvas.width / 2) ? user : computer;
-    if (collisionDetection(ball, whichPlayer))
-        ball.velX = -ball.velX;
+    if (collisionDetection(ball, whichPlayer)) {
+        let collisionPoint = ball.y - (whichPlayer.y + whichPlayer.height / 2);
+        collisionPoint = collisionPoint / (whichPlayer.height / 2);
+        let angleRad = collisionPoint * Math.PI / 4;
+        let direction = (ball.x < canvas.width / 2) ? 1 : -1;
+        ball.velX = direction * ball.speed * Math.cos(angleRad);
+        ball.velY = direction * ball.speed * Math.sin(angleRad);
+        ball.speed += 0.5;
+    }
+
+    if (ball.x - ball.radius < 0) {
+        computer.score++;
+        resetBall();
+    } else if (ball.x + ball.radius > canvas.width) {
+        user.score++;
+        resetBall();
+    }
 
 }
 
@@ -116,5 +140,5 @@ function game() {
     render();
 }
 
-const fps = 50;
+const fps = 60;
 setInterval(game, 1000 / fps);
